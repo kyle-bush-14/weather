@@ -9,6 +9,18 @@ export interface WeatherData {
   conditions: string;
 }
 
+export interface ForecastPeriod {
+  name: string;
+  startTime: Date;
+  endTime: Date;
+  temperature: number;
+  temperatureUnit: string;
+  windSpeed: string;
+  windDirection: string;
+  shortForecast: string;
+  detailedForecast: string;
+}
+
 interface NWSPoint {
   gridId: string;
   gridX: number;
@@ -79,6 +91,41 @@ export async function fetchHourlyWeather(lat: number, lon: number): Promise<Weat
   } catch (error) {
     console.error('Error fetching hourly weather:', error);
     throw new Error('Failed to fetch hourly weather data from NWS API');
+  }
+}
+
+/**
+ * Fetches the forecast overview from the NWS API
+ */
+export async function fetchForecast(lat: number, lon: number): Promise<ForecastPeriod[]> {
+  try {
+    // First, get the grid point
+    const gridPoint = await getGridPoint(lat, lon);
+    
+    // Then fetch the forecast
+    const response = await axios.get(
+      `https://api.weather.gov/gridpoints/${gridPoint.gridId}/${gridPoint.gridX},${gridPoint.gridY}/forecast`
+    );
+
+    const periods: any[] = response.data.properties.periods;
+    
+    // Transform the data to our ForecastPeriod format
+    const forecastData: ForecastPeriod[] = periods.map((period) => ({
+      name: period.name,
+      startTime: new Date(period.startTime),
+      endTime: new Date(period.endTime),
+      temperature: period.temperature,
+      temperatureUnit: period.temperatureUnit,
+      windSpeed: period.windSpeed,
+      windDirection: period.windDirection,
+      shortForecast: period.shortForecast,
+      detailedForecast: period.detailedForecast,
+    }));
+
+    return forecastData;
+  } catch (error) {
+    console.error('Error fetching forecast:', error);
+    throw new Error('Failed to fetch forecast data from NWS API');
   }
 }
 
