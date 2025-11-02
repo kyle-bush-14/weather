@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import WeatherDashboard from '@/components/WeatherDashboard';
-import { fetchHourlyWeather, searchLocation, WeatherData } from '@/lib/weather';
+import { fetchHourlyWeather, fetchForecast, searchLocation, WeatherData, ForecastPeriod } from '@/lib/weather';
 
 export default function Home() {
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
+  const [forecastData, setForecastData] = useState<ForecastPeriod[]>([]);
   const [locationName, setLocationName] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchResults, setSearchResults] = useState<{ lat: number; lon: number; name: string }[]>([]);
@@ -32,10 +33,15 @@ export default function Home() {
     setLoading(true);
     setError(null);
     setWeatherData([]);
+    setForecastData([]);
     
     try {
-      const data = await fetchHourlyWeather(lat, lon);
-      setWeatherData(data);
+      const [hourlyData, forecast] = await Promise.all([
+        fetchHourlyWeather(lat, lon),
+        fetchForecast(lat, lon)
+      ]);
+      setWeatherData(hourlyData);
+      setForecastData(forecast);
       setLocationName(name);
       setSearchResults([]);
     } catch (err) {
@@ -60,8 +66,12 @@ export default function Home() {
         try {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
-          const data = await fetchHourlyWeather(lat, lon);
-          setWeatherData(data);
+          const [hourlyData, forecast] = await Promise.all([
+            fetchHourlyWeather(lat, lon),
+            fetchForecast(lat, lon)
+          ]);
+          setWeatherData(hourlyData);
+          setForecastData(forecast);
           setLocationName(`${lat.toFixed(4)}, ${lon.toFixed(4)}`);
         } catch (err) {
           setError('Failed to fetch weather data for your location');
@@ -161,7 +171,7 @@ export default function Home() {
         {/* Weather Dashboard */}
         {weatherData.length > 0 && !loading && (
           <div className="max-w-7xl mx-auto">
-            <WeatherDashboard data={weatherData} locationName={locationName} />
+            <WeatherDashboard data={weatherData} forecastData={forecastData} locationName={locationName} />
           </div>
         )}
 
