@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import CustomTooltip from './CustomTooltip';
 
 interface ChartData {
   time: string;
@@ -19,21 +20,6 @@ interface ChartData {
 interface TemperatureChartProps {
   data: ChartData[];
 }
-
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg p-3">
-        {payload.map((entry: any, index: number) => (
-          <p key={index} style={{ color: entry.color }} className="font-medium">
-            {entry.name}: {entry.value} {entry.unit || ''}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
 
 export default function TemperatureChart({ data }: TemperatureChartProps) {
   return (
