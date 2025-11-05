@@ -22,6 +22,13 @@ interface TemperatureChartProps {
 }
 
 export default function TemperatureChart({ data }: TemperatureChartProps) {
+  // Calculate min and max temperatures with 5 degree buffer
+  const temperatures = data.map(d => d.temperature);
+  const minTemp = Math.min(...temperatures);
+  const maxTemp = Math.max(...temperatures);
+  const yAxisMin = Math.floor(minTemp - 5);
+  const yAxisMax = Math.ceil(maxTemp + 5);
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
@@ -38,6 +45,7 @@ export default function TemperatureChart({ data }: TemperatureChartProps) {
           <YAxis 
             label={{ value: '°F', angle: -90, position: 'insideLeft' }}
             stroke="#6b7280"
+            domain={[yAxisMin, yAxisMax]}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
