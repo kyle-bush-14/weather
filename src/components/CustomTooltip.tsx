@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -11,7 +11,7 @@ export default function CustomTooltip({ active, payload }: CustomTooltipProps) {
       <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg p-3">
         {payload.map((entry: any, index: number) => (
           <p key={index} style={{ color: entry.color }} className="font-medium">
-            {entry.name}: {entry.value} {entry.unit || ''}
+            {entry.name}: {entry.value} {entry.unit || ""}
           </p>
         ))}
       </div>
@@ -19,4 +19,3 @@ export default function CustomTooltip({ active, payload }: CustomTooltipProps) {
   }
   return null;
 }
-

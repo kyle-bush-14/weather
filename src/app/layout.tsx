@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Weather Dashboard",
-  description: "A beautiful weather dashboard powered by the National Weather Service API",
+  description:
+    "A beautiful weather dashboard powered by the National Weather Service API",
 };
 
 export default function RootLayout({

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { WeatherData, ForecastPeriod } from '@/lib/weather';
-import TemperatureChart from './TemperatureChart';
-import HumidityChart from './HumidityChart';
-import WindSpeedChart from './WindSpeedChart';
-import ForecastTable from './ForecastTable';
+import { useState } from "react";
+import { WeatherData, ForecastPeriod } from "@/lib/weather";
+import TemperatureChart from "./TemperatureChart";
+import HumidityChart from "./HumidityChart";
+import WindSpeedChart from "./WindSpeedChart";
+import ForecastTable from "./ForecastTable";
 
 interface WeatherDashboardProps {
   data: WeatherData[];
@@ -13,12 +13,18 @@ interface WeatherDashboardProps {
   forecastData?: ForecastPeriod[];
 }
 
-export default function WeatherDashboard({ data, locationName, forecastData }: WeatherDashboardProps) {
+export default function WeatherDashboard({
+  data,
+  locationName,
+  forecastData,
+}: WeatherDashboardProps) {
   const [selectedDays, setSelectedDays] = useState(1);
 
   // Filter data based on selected days
   const now = new Date();
-  const cutoffTime = new Date(now.getTime() + selectedDays * 24 * 60 * 60 * 1000);
+  const cutoffTime = new Date(
+    now.getTime() + selectedDays * 24 * 60 * 60 * 1000
+  );
 
   const filteredData = data.filter((item) => {
     const itemTime = new Date(item.time);
@@ -26,18 +32,61 @@ export default function WeatherDashboard({ data, locationName, forecastData }: W
   });
 
   // Format data for recharts
-  const chartData = filteredData.map((item) => ({
-    time: new Date(item.time).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-    }),
-    hour: new Date(item.time).getHours(),
-    temperature: item.temperature,
-    humidity: item.relativeHumidity,
-    windSpeed: item.windSpeed,
-    windDirection: item.windDirection,
-  }));
+  const chartData = filteredData.map((item) => {
+    const itemDate = new Date(item.time);
+    return {
+      time: itemDate.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+      }),
+      hour: itemDate.getHours(),
+      date: itemDate,
+      temperature: item.temperature,
+      humidity: item.relativeHumidity,
+      windSpeed: item.windSpeed,
+      windDirection: item.windDirection,
+    };
+  });
+
+  // Calculate tick positions based on selected days
+  const getTickPositions = (): string[] => {
+    if (chartData.length === 0) return [];
+
+    const ticks: string[] = [];
+
+    if (selectedDays === 1) {
+      // 1 day: midnight, 6am, noon, 6pm
+      chartData.forEach((item) => {
+        if (
+          item.hour === 0 ||
+          item.hour === 6 ||
+          item.hour === 12 ||
+          item.hour === 18
+        ) {
+          ticks.push(item.time);
+        }
+      });
+    } else if (selectedDays === 3) {
+      // 3 days: midnight and noon of each day
+      chartData.forEach((item) => {
+        if (item.hour === 0 || item.hour === 12) {
+          ticks.push(item.time);
+        }
+      });
+    } else if (selectedDays === 7) {
+      // 7 days: start of each day (midnight)
+      chartData.forEach((item) => {
+        if (item.hour === 0) {
+          ticks.push(item.time);
+        }
+      });
+    }
+
+    return ticks;
+  };
+
+  const tickPositions = getTickPositions();
 
   return (
     <div className="w-full space-y-6">
@@ -57,9 +106,9 @@ export default function WeatherDashboard({ data, locationName, forecastData }: W
         </select>
       </div>
 
-      <TemperatureChart data={chartData} />
-      <HumidityChart data={chartData} />
-      <WindSpeedChart data={chartData} />
+      <TemperatureChart data={chartData} tickPositions={tickPositions} />
+      <HumidityChart data={chartData} tickPositions={tickPositions} />
+      <WindSpeedChart data={chartData} tickPositions={tickPositions} />
       {forecastData && <ForecastTable forecastData={forecastData} />}
     </div>
   );
