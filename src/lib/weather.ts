@@ -130,33 +130,46 @@ export async function fetchForecast(lat: number, lon: number): Promise<ForecastP
 }
 
 /**
- * Searches for locations by name using the geocoding API
+ * Searches for locations by name using LocationIQ geocoding API
  */
 export async function searchLocation(query: string): Promise<{ lat: number; lon: number; name: string }[]> {
   try {
-    const response = await axios.get(
-      'https://geocoding-api.open-meteo.com/v1/search',
-      {
-        params: {
-          name: query,
-          count: 10,
-          language: 'en',
-          format: 'json',
-        },
-      }
-    );
+    const apiKey = process.env.NEXT_PUBLIC_LOCATIONIQ_API_KEY;
 
-    if (!response.data.results) {
+    if (!apiKey) {
+      console.error('LocationIQ API key is not configured');
       return [];
     }
 
-    return response.data.results.map((result: any) => ({
-      name: `${result.name}, ${result.admin1 || ''} ${result.country}`,
-      lat: result.latitude,
-      lon: result.longitude,
+    const url = new URL('https://us1.locationiq.com/v1/search');
+    url.searchParams.append('key', apiKey);
+    url.searchParams.append('q', query);
+    url.searchParams.append('format', 'json');
+    url.searchParams.append('limit', '10');
+
+    console.log('LocationIQ API URL:', url.toString());
+
+    const response = await axios.get(url.toString());
+
+    if (!response.data || response.data.length === 0) {
+      return [];
+    }
+
+    return response.data.map((result: any) => ({
+      name: result.display_name,
+      lat: parseFloat(result.lat),
+      lon: parseFloat(result.lon),
     }));
   } catch (error) {
-    console.error('Error searching location:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('LocationIQ API Error:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+      });
+    } else {
+      console.error('Error searching location:', error);
+    }
     return [];
   }
 }
