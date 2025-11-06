@@ -19,7 +19,7 @@ interface ChartData {
 
 interface HumidityChartProps {
   data: ChartData[];
-  tickPositions?: number[];
+  tickPositions?: string[];
 }
 
 export default function HumidityChart({ data, tickPositions = [] }: HumidityChartProps) {

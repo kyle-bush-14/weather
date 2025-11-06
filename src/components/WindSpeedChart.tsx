@@ -19,7 +19,7 @@ interface ChartData {
 
 interface WindSpeedChartProps {
   data: ChartData[];
-  tickPositions?: number[];
+  tickPositions?: string[];
 }
 
 export default function WindSpeedChart({ data, tickPositions = [] }: WindSpeedChartProps) {

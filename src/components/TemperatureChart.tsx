@@ -19,7 +19,7 @@ interface ChartData {
 
 interface TemperatureChartProps {
   data: ChartData[];
-  tickPositions?: number[];
+  tickPositions?: string[];
 }
 
 export default function TemperatureChart({ data, tickPositions = [] }: TemperatureChartProps) {

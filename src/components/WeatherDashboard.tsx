@@ -44,30 +44,30 @@ export default function WeatherDashboard({ data, locationName, forecastData }: W
   });
 
   // Calculate tick positions based on selected days
-  const getTickPositions = (): number[] => {
+  const getTickPositions = (): string[] => {
     if (chartData.length === 0) return [];
 
-    const ticks: number[] = [];
+    const ticks: string[] = [];
 
     if (selectedDays === 1) {
       // 1 day: midnight, 6am, noon, 6pm
-      chartData.forEach((item, index) => {
+      chartData.forEach((item) => {
         if (item.hour === 0 || item.hour === 6 || item.hour === 12 || item.hour === 18) {
-          ticks.push(index);
+          ticks.push(item.time);
         }
       });
     } else if (selectedDays === 3) {
       // 3 days: midnight and noon of each day
-      chartData.forEach((item, index) => {
+      chartData.forEach((item) => {
         if (item.hour === 0 || item.hour === 12) {
-          ticks.push(index);
+          ticks.push(item.time);
         }
       });
     } else if (selectedDays === 7) {
       // 7 days: start of each day (midnight)
-      chartData.forEach((item, index) => {
+      chartData.forEach((item) => {
         if (item.hour === 0) {
-          ticks.push(index);
+          ticks.push(item.time);
         }
       });
     }
