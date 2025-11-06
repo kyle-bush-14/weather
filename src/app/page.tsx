@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import WeatherDashboard from "@/components/WeatherDashboard";
+import CurrentWeather from "@/components/CurrentWeather";
 import {
   fetchHourlyWeather,
   fetchForecast,
@@ -193,6 +194,7 @@ export default function Home() {
         {/* Weather Dashboard */}
         {weatherData.length > 0 && !loading && (
           <div className="max-w-7xl mx-auto">
+            <CurrentWeather data={weatherData} locationName={locationName} />
             <WeatherDashboard
               data={weatherData}
               forecastData={forecastData}
