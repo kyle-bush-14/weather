@@ -19,9 +19,10 @@ interface ChartData {
 
 interface TemperatureChartProps {
   data: ChartData[];
+  tickPositions?: number[];
 }
 
-export default function TemperatureChart({ data }: TemperatureChartProps) {
+export default function TemperatureChart({ data, tickPositions = [] }: TemperatureChartProps) {
   // Calculate min and max temperatures with 5 degree buffer
   const temperatures = data.map(d => d.temperature);
   const minTemp = Math.min(...temperatures);
@@ -37,10 +38,11 @@ export default function TemperatureChart({ data }: TemperatureChartProps) {
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis 
-            dataKey="time" 
+          <XAxis
+            dataKey="time"
             stroke="#6b7280"
             style={{ fontSize: '12px' }}
+            ticks={tickPositions}
           />
           <YAxis 
             label={{ value: '°F', angle: -90, position: 'insideLeft' }}

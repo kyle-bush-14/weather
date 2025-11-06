@@ -26,18 +26,56 @@ export default function WeatherDashboard({ data, locationName, forecastData }: W
   });
 
   // Format data for recharts
-  const chartData = filteredData.map((item) => ({
-    time: new Date(item.time).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-    }),
-    hour: new Date(item.time).getHours(),
-    temperature: item.temperature,
-    humidity: item.relativeHumidity,
-    windSpeed: item.windSpeed,
-    windDirection: item.windDirection,
-  }));
+  const chartData = filteredData.map((item) => {
+    const itemDate = new Date(item.time);
+    return {
+      time: itemDate.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+      }),
+      hour: itemDate.getHours(),
+      date: itemDate,
+      temperature: item.temperature,
+      humidity: item.relativeHumidity,
+      windSpeed: item.windSpeed,
+      windDirection: item.windDirection,
+    };
+  });
+
+  // Calculate tick positions based on selected days
+  const getTickPositions = (): number[] => {
+    if (chartData.length === 0) return [];
+
+    const ticks: number[] = [];
+
+    if (selectedDays === 1) {
+      // 1 day: midnight, 6am, noon, 6pm
+      chartData.forEach((item, index) => {
+        if (item.hour === 0 || item.hour === 6 || item.hour === 12 || item.hour === 18) {
+          ticks.push(index);
+        }
+      });
+    } else if (selectedDays === 3) {
+      // 3 days: midnight and noon of each day
+      chartData.forEach((item, index) => {
+        if (item.hour === 0 || item.hour === 12) {
+          ticks.push(index);
+        }
+      });
+    } else if (selectedDays === 7) {
+      // 7 days: start of each day (midnight)
+      chartData.forEach((item, index) => {
+        if (item.hour === 0) {
+          ticks.push(index);
+        }
+      });
+    }
+
+    return ticks;
+  };
+
+  const tickPositions = getTickPositions();
 
   return (
     <div className="w-full space-y-6">
@@ -57,9 +95,9 @@ export default function WeatherDashboard({ data, locationName, forecastData }: W
         </select>
       </div>
 
-      <TemperatureChart data={chartData} />
-      <HumidityChart data={chartData} />
-      <WindSpeedChart data={chartData} />
+      <TemperatureChart data={chartData} tickPositions={tickPositions} />
+      <HumidityChart data={chartData} tickPositions={tickPositions} />
+      <WindSpeedChart data={chartData} tickPositions={tickPositions} />
       {forecastData && <ForecastTable forecastData={forecastData} />}
     </div>
   );
