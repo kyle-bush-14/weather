@@ -35,7 +35,7 @@ export default function HumidityChart({ data, tickPositions = [] }: HumidityChar
             dataKey="time"
             stroke="#6b7280"
             style={{ fontSize: '12px' }}
-            ticks={tickPositions}
+            {...(tickPositions.length > 0 && { ticks: tickPositions })}
           />
           <YAxis 
             label={{ value: '%', angle: -90, position: 'insideLeft' }}

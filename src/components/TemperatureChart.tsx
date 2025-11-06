@@ -42,7 +42,7 @@ export default function TemperatureChart({ data, tickPositions = [] }: Temperatu
             dataKey="time"
             stroke="#6b7280"
             style={{ fontSize: '12px' }}
-            ticks={tickPositions}
+            {...(tickPositions.length > 0 && { ticks: tickPositions })}
           />
           <YAxis 
             label={{ value: '°F', angle: -90, position: 'insideLeft' }}
