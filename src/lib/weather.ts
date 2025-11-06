@@ -147,8 +147,6 @@ export async function searchLocation(query: string): Promise<{ lat: number; lon:
     url.searchParams.append('format', 'json');
     url.searchParams.append('limit', '10');
 
-    console.log('LocationIQ API URL:', url.toString());
-
     const response = await axios.get(url.toString());
 
     if (!response.data || response.data.length === 0) {
