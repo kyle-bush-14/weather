@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   LineChart,
@@ -9,8 +9,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
-import CustomTooltip from './CustomTooltip';
+} from "recharts";
+import CustomTooltip from "./CustomTooltip";
 
 interface ChartData {
   time: string;
@@ -22,9 +22,12 @@ interface TemperatureChartProps {
   tickPositions?: string[];
 }
 
-export default function TemperatureChart({ data, tickPositions = [] }: TemperatureChartProps) {
+export default function TemperatureChart({
+  data,
+  tickPositions = [],
+}: TemperatureChartProps) {
   // Calculate min and max temperatures with 5 degree buffer
-  const temperatures = data.map(d => d.temperature);
+  const temperatures = data.map((d) => d.temperature);
   const minTemp = Math.min(...temperatures);
   const maxTemp = Math.max(...temperatures);
   const yAxisMin = Math.floor(minTemp - 5);
@@ -41,20 +44,20 @@ export default function TemperatureChart({ data, tickPositions = [] }: Temperatu
           <XAxis
             dataKey="time"
             stroke="#6b7280"
-            style={{ fontSize: '12px' }}
-            {...(tickPositions.length > 0 && { ticks: tickPositions })}
+            style={{ fontSize: "12px" }}
+            ticks={tickPositions}
           />
-          <YAxis 
-            label={{ value: '°F', angle: -90, position: 'insideLeft' }}
+          <YAxis
+            label={{ value: "°F", angle: -90, position: "insideLeft" }}
             stroke="#6b7280"
             domain={[yAxisMin, yAxisMax]}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="temperature" 
-            stroke="#3b82f6" 
+          <Line
+            type="monotone"
+            dataKey="temperature"
+            stroke="#3b82f6"
             strokeWidth={2}
             dot={false}
             name="Temperature"
@@ -64,4 +67,3 @@ export default function TemperatureChart({ data, tickPositions = [] }: Temperatu
     </div>
   );
 }
-

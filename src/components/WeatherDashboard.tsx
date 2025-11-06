@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { WeatherData, ForecastPeriod } from '@/lib/weather';
-import TemperatureChart from './TemperatureChart';
-import HumidityChart from './HumidityChart';
-import WindSpeedChart from './WindSpeedChart';
-import ForecastTable from './ForecastTable';
+import { useState } from "react";
+import { WeatherData, ForecastPeriod } from "@/lib/weather";
+import TemperatureChart from "./TemperatureChart";
+import HumidityChart from "./HumidityChart";
+import WindSpeedChart from "./WindSpeedChart";
+import ForecastTable from "./ForecastTable";
 
 interface WeatherDashboardProps {
   data: WeatherData[];
@@ -13,12 +13,18 @@ interface WeatherDashboardProps {
   forecastData?: ForecastPeriod[];
 }
 
-export default function WeatherDashboard({ data, locationName, forecastData }: WeatherDashboardProps) {
+export default function WeatherDashboard({
+  data,
+  locationName,
+  forecastData,
+}: WeatherDashboardProps) {
   const [selectedDays, setSelectedDays] = useState(1);
 
   // Filter data based on selected days
   const now = new Date();
-  const cutoffTime = new Date(now.getTime() + selectedDays * 24 * 60 * 60 * 1000);
+  const cutoffTime = new Date(
+    now.getTime() + selectedDays * 24 * 60 * 60 * 1000
+  );
 
   const filteredData = data.filter((item) => {
     const itemTime = new Date(item.time);
@@ -29,10 +35,10 @@ export default function WeatherDashboard({ data, locationName, forecastData }: W
   const chartData = filteredData.map((item) => {
     const itemDate = new Date(item.time);
     return {
-      time: itemDate.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
+      time: itemDate.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
       }),
       hour: itemDate.getHours(),
       date: itemDate,
@@ -52,7 +58,12 @@ export default function WeatherDashboard({ data, locationName, forecastData }: W
     if (selectedDays === 1) {
       // 1 day: midnight, 6am, noon, 6pm
       chartData.forEach((item) => {
-        if (item.hour === 0 || item.hour === 6 || item.hour === 12 || item.hour === 18) {
+        if (
+          item.hour === 0 ||
+          item.hour === 6 ||
+          item.hour === 12 ||
+          item.hour === 18
+        ) {
           ticks.push(item.time);
         }
       });

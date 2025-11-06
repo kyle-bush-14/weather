@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { ForecastPeriod } from '@/lib/weather';
+import { ForecastPeriod } from "@/lib/weather";
 
 interface ForecastTableProps {
   forecastData: ForecastPeriod[];
@@ -36,7 +36,10 @@ export default function ForecastTable({ forecastData }: ForecastTableProps) {
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {forecastData.map((period, index) => (
-              <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <tr
+                key={index}
+                className="hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
                   {period.name}
                 </td>
@@ -57,4 +60,3 @@ export default function ForecastTable({ forecastData }: ForecastTableProps) {
     </div>
   );
 }
-

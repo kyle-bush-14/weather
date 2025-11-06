@@ -1,51 +1,63 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import WeatherDashboard from '@/components/WeatherDashboard';
-import { fetchHourlyWeather, fetchForecast, searchLocation, WeatherData, ForecastPeriod } from '@/lib/weather';
+import { useState } from "react";
+import WeatherDashboard from "@/components/WeatherDashboard";
+import {
+  fetchHourlyWeather,
+  fetchForecast,
+  searchLocation,
+  WeatherData,
+  ForecastPeriod,
+} from "@/lib/weather";
 
 export default function Home() {
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [forecastData, setForecastData] = useState<ForecastPeriod[]>([]);
-  const [locationName, setLocationName] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<{ lat: number; lon: number; name: string }[]>([]);
+  const [locationName, setLocationName] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<
+    { lat: number; lon: number; name: string }[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    
+
     setLoading(true);
     setError(null);
     try {
       const results = await searchLocation(searchQuery);
       setSearchResults(results);
     } catch (err) {
-      setError('Failed to search for location');
+      setError("Failed to search for location");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLocationSelect = async (lat: number, lon: number, name: string) => {
+  const handleLocationSelect = async (
+    lat: number,
+    lon: number,
+    name: string
+  ) => {
     setLoading(true);
     setError(null);
     setWeatherData([]);
     setForecastData([]);
-    
+
     try {
       const [hourlyData, forecast] = await Promise.all([
         fetchHourlyWeather(lat, lon),
-        fetchForecast(lat, lon)
+        fetchForecast(lat, lon),
       ]);
       setWeatherData(hourlyData);
       setForecastData(forecast);
       setLocationName(name);
       setSearchResults([]);
     } catch (err) {
-      setError('Failed to fetch weather data. Please try again.');
+      setError("Failed to fetch weather data. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -54,13 +66,13 @@ export default function Home() {
 
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
+      setError("Geolocation is not supported by your browser");
       return;
     }
 
     setLoading(true);
     setError(null);
-    
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
@@ -68,20 +80,22 @@ export default function Home() {
           const lon = position.coords.longitude;
           const [hourlyData, forecast] = await Promise.all([
             fetchHourlyWeather(lat, lon),
-            fetchForecast(lat, lon)
+            fetchForecast(lat, lon),
           ]);
           setWeatherData(hourlyData);
           setForecastData(forecast);
           setLocationName(`${lat.toFixed(4)}, ${lon.toFixed(4)}`);
         } catch (err) {
-          setError('Failed to fetch weather data for your location');
+          setError("Failed to fetch weather data for your location");
           console.error(err);
         } finally {
           setLoading(false);
         }
       },
       (err) => {
-        setError('Failed to get your location. Please enable location services.');
+        setError(
+          "Failed to get your location. Please enable location services."
+        );
         console.error(err);
         setLoading(false);
       }
@@ -109,7 +123,7 @@ export default function Home() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                   placeholder="Search for a location..."
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 />
@@ -140,7 +154,13 @@ export default function Home() {
                   {searchResults.map((result, index) => (
                     <button
                       key={index}
-                      onClick={() => handleLocationSelect(result.lat, result.lon, result.name)}
+                      onClick={() =>
+                        handleLocationSelect(
+                          result.lat,
+                          result.lon,
+                          result.name
+                        )
+                      }
                       disabled={loading}
                       className="w-full text-left px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-900 dark:text-white"
                     >
@@ -162,7 +182,9 @@ export default function Home() {
             {loading && (
               <div className="mt-4 text-center">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-2 text-gray-600 dark:text-gray-300">Loading...</p>
+                <p className="mt-2 text-gray-600 dark:text-gray-300">
+                  Loading...
+                </p>
               </div>
             )}
           </div>
@@ -171,7 +193,11 @@ export default function Home() {
         {/* Weather Dashboard */}
         {weatherData.length > 0 && !loading && (
           <div className="max-w-7xl mx-auto">
-            <WeatherDashboard data={weatherData} forecastData={forecastData} locationName={locationName} />
+            <WeatherDashboard
+              data={weatherData}
+              forecastData={forecastData}
+              locationName={locationName}
+            />
           </div>
         )}
 
@@ -196,7 +222,8 @@ export default function Home() {
                 Get Started
               </h3>
               <p className="mt-2 text-gray-600 dark:text-gray-300">
-                Search for a location or use your current location to view hourly weather data
+                Search for a location or use your current location to view
+                hourly weather data
               </p>
             </div>
           </div>
